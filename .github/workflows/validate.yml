@@ -1,0 +1,71 @@
+name: validate
+
+on:
+  workflow_dispatch:
+    inputs:
+      test:
+        description: 'Test'
+        required: false
+        default: 'complete'
+      workload:
+        description: 'Workload'
+        required: true
+        default: 'demo'
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+  WORKLOAD: ${{ github.event.inputs.workload }}
+  ENVIRONMENT: ${{ github.event.inputs.environment }}
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    environment : development
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }}
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: terraform init
+        run: terraform init
+
+      - name: terraform validate
+        run: terraform validate
+
+      - name: terraform fmt
+        run: terraform fmt -check -recursive
+        continue-on-error: false
+
+      - name: setup go
+        uses: actions/setup-go@v4
+        with:
+          check-latest: true
+
+      - name: fetch go modules
+        working-directory: tests
+        run: go mod download
+
+      - name: run tests
+        run: |
+          if [ "${{ github.event.inputs.test }}" = "test_extended" ]; then
+            make ${{ github.event.inputs.test }}
+          else
+            make test USECASE=${{ github.event.inputs.test }}
+          fi
