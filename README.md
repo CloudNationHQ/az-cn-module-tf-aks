@@ -106,7 +106,7 @@ Before running these tests, ensure that both Go and Terraform are installed on y
 
 ## Authors
 
-Module is maintained by [these awesome contributors](https://github.com/cloudnationhq/az-module-tf-aks/graphs/contributors).
+Module is maintained by [these awesome contributors](https://github.com/cloudnationhq/az-cn-module-tf-aks/graphs/contributors).
 
 ## License
 
