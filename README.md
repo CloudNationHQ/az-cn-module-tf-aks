@@ -97,7 +97,7 @@ module "aks" {
 
 | Name | Description |
 | :-- | :-- |
-| `aks` | contains all bastion hosts |
+| `aks` | contains all aks configuration |
 
 ## Testing
 This GitHub repository features a [Makefile](./Makefile) tailored for testing various configurations. Each test target corresponds to different example use cases provided within the repository.
