@@ -1,3 +1,11 @@
-variable "aks" {}
-variable "workload" {}
-variable "environment" {}
+variable "aks" {
+  type = any
+}
+
+variable "workload" {
+  type = string
+}
+
+variable "environment" {
+  type = string
+}
