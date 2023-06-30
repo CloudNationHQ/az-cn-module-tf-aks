@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/CloudNationHQ/az-cn-module-tf-aks/compare/v0.1.0...v0.2.0) (2023-06-30)
+
+
+### Features
+
+* refactor workflows and solve linting issues ([#8](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/8)) ([71ef154](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/71ef1541023a037b9ec42795fab6076aabcfefe3))
+
 ## 0.1.0 (2023-06-28)
 
 
