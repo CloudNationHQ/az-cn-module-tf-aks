@@ -2,7 +2,7 @@ module github.com/cloudnationhq/az-cn-module-tf-aks
 
 go 1.20
 
-require github.com/gruntwork-io/terratest v0.43.5
+require github.com/gruntwork-io/terratest v0.43.6
 
 require (
 	cloud.google.com/go v0.105.0 // indirect
