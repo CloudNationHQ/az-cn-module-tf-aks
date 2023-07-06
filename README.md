@@ -82,6 +82,7 @@ module "aks" {
   }
   depends_on = [module.rg]
 }
+```
 
 ## Usage: container registry
 
