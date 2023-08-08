@@ -37,7 +37,6 @@ module "aks" {
     location            = module.rg.groups.demo.location
     resourcegroup       = module.rg.groups.demo.name
     node_resource_group = "${module.rg.groups.demo.name}-node"
-    dns_prefix          = "demo"
 
     registry = {
       attach = true, role_assignment_scope = module.registry.acr.id
