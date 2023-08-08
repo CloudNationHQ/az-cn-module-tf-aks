@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0](https://github.com/CloudNationHQ/az-cn-module-tf-aks/compare/v0.2.0...v0.3.0) (2023-08-08)
+
+
+### Features
+
+* add windows node os and auto upgrade maintenance support ([#18](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/18)) ([9ca879d](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/9ca879dd3dd85c3ef910ce8bcedaf29a91db072a))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#10](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/10)) ([f117fcb](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/f117fcbcd6ebcceef848e94586af1020ef4c0109))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#16](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/16)) ([0509934](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/050993433400e8b24cd50d0bbf69e5e082d90306))
+* **deps:** bump google.golang.org/grpc from 1.51.0 to 1.53.0 in /tests ([#12](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/12)) ([2bc6ecc](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/2bc6eccec2e25b1c4ad7e485f0721eba7d640df8))
+* remove explicit dependencies ([#17](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/17)) ([f3bf21a](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/f3bf21a7ab59034f5220c3b02daf1f89164d3db9))
+
 ## [0.2.0](https://github.com/CloudNationHQ/az-cn-module-tf-aks/compare/v0.1.0...v0.2.0) (2023-06-30)
 
 
