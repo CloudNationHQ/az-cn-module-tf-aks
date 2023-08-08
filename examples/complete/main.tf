@@ -136,15 +136,10 @@ module "aks" {
           managed_outbound_ip_count = 10
         }
       }
-      autoscaler = {
-        enable = {
-          keda         = true
-          vertical_pod = true
-        }
-        linux = {
-          username = "nodeadmin"
-          ssh_key  = module.kv.tls_public_key.aks.value
-        }
+
+      linux = {
+        username = "nodeadmin"
+        ssh_key  = module.kv.tls_public_key.aks.value
       }
     }
   }
