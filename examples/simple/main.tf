@@ -39,7 +39,6 @@ module "kv" {
       }
     }
   }
-  depends_on = [module.rg]
 }
 
 module "aks" {
@@ -66,5 +65,4 @@ module "aks" {
       }
     }
   }
-  depends_on = [module.rg]
 }
