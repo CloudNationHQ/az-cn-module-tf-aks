@@ -84,6 +84,4 @@ module "aks" {
       }
     }
   }
-  depends_on = [module.rg]
 }
-
