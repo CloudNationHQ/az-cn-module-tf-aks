@@ -5,24 +5,25 @@ resource "azurerm_kubernetes_cluster" "aks" {
   resource_group_name = var.aks.resourcegroup
   location            = var.aks.location
 
-  kubernetes_version                = try(var.aks.version, null)
-  sku_tier                          = try(var.aks.sku, "Free")
-  node_resource_group               = try(var.aks.node_resource_group, [])
-  azure_policy_enabled              = try(var.aks.enable.azure_policy, false)
-  dns_prefix                        = try(var.aks.dns_prefix, false)
-  automatic_channel_upgrade         = try(var.aks.channel_upgrade, null)
-  edge_zone                         = try(var.aks.edge_zone, null)
-  oidc_issuer_enabled               = try(var.aks.enable.oidc_issuer, false)
-  local_account_disabled            = try(var.aks.disable.local_account, false)
-  private_cluster_enabled           = try(var.aks.enable_private_cluster, false)
-  public_network_access_enabled     = try(var.aks.enable.public_access, false)
-  open_service_mesh_enabled         = try(var.aks.enable.service_mesh, false)
-  run_command_enabled               = try(var.aks.enable.run_command, false)
-  role_based_access_control_enabled = try(var.aks.enable.rbac, false)
-  image_cleaner_enabled             = try(var.aks.enable.image_cleaner, false)
-  image_cleaner_interval_hours      = try(var.aks.image_cleaner_interval_hours, 48)
-  http_application_routing_enabled  = try(var.aks.enable.http_application_routing, false)
-  workload_identity_enabled         = try(var.aks.enable.workload_identity, false)
+  kubernetes_version                  = try(var.aks.version, null)
+  sku_tier                            = try(var.aks.sku, "Free")
+  node_resource_group                 = try(var.aks.node_resource_group, [])
+  azure_policy_enabled                = try(var.aks.enable.azure_policy, false)
+  dns_prefix                          = try(var.aks.dns_prefix, false)
+  automatic_channel_upgrade           = try(var.aks.channel_upgrade, null)
+  edge_zone                           = try(var.aks.edge_zone, null)
+  oidc_issuer_enabled                 = try(var.aks.enable.oidc_issuer, false)
+  local_account_disabled              = try(var.aks.disable.local_account, false)
+  private_cluster_enabled             = try(var.aks.enable_private_cluster, false)
+  public_network_access_enabled       = try(var.aks.enable.public_access, true)
+  open_service_mesh_enabled           = try(var.aks.enable.service_mesh, false)
+  run_command_enabled                 = try(var.aks.enable.run_command, false)
+  role_based_access_control_enabled   = try(var.aks.enable.rbac, true)
+  image_cleaner_enabled               = try(var.aks.enable.image_cleaner, false)
+  image_cleaner_interval_hours        = try(var.aks.image_cleaner_interval_hours, 48)
+  http_application_routing_enabled    = try(var.aks.enable.http_application_routing, false)
+  workload_identity_enabled           = try(var.aks.enable.workload_identity, false)
+  custom_ca_trust_certificates_base64 = try(var.aks.custom_ca_trust_certificates_base64, [])
 
   dynamic "network_profile" {
     for_each = try(var.aks.profile.network, null) != null ? { "default" = var.aks.profile.network } : {}
@@ -114,7 +115,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
       # feature flag needs to be enabled
       # https://learn.microsoft.com/en-us/azure/aks/istio-deploy-addon#register-the-azureservicemeshpreview-feature-flag
 
-      mode = try(service_mesh_profile.value.mode, false)
+      mode                             = try(service_mesh_profile.value.mode, false)
+      internal_ingress_gateway_enabled = try(service_mesh_profile.value.internal_ingress_gateway_enabled, false)
+      external_ingress_gateway_enabled = try(service_mesh_profile.value.external_ingress_gateway_enabled, false)
     }
   }
 
@@ -180,6 +183,56 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
+  dynamic "maintenance_window_node_os" {
+    for_each = try(var.aks.maintenance_node_os, null) != null ? { "default" = var.aks.maintenance_node_os } : {}
+
+    content {
+      dynamic "not_allowed" {
+        for_each = {
+          for k, v in try(var.aks.maintenance_node_os.disallowed, {}) : k => v
+        }
+        content {
+          end   = not_allowed.value.end
+          start = not_allowed.value.start
+        }
+      }
+
+      frequency   = maintenance_window_node_os.value.config.frequency
+      interval    = maintenance_window_node_os.value.config.interval
+      duration    = maintenance_window_node_os.value.config.duration
+      day_of_week = try(maintenance_window_node_os.value.config.day_of_week, null)
+      week_index  = try(maintenance_window_node_os.value.config.week_index, null)
+      start_time  = try(maintenance_window_node_os.value.config.start_time, null)
+      utc_offset  = try(maintenance_window_node_os.value.config.utc_offset, null)
+      start_date  = try(maintenance_window_node_os.value.config.start_date, null)
+    }
+  }
+
+  dynamic "maintenance_window_auto_upgrade" {
+    for_each = try(var.aks.maintenance_auto_upgrade, null) != null ? { "default" = var.aks.maintenance_auto_upgrade } : {}
+
+    content {
+      dynamic "not_allowed" {
+        for_each = {
+          for k, v in try(var.aks.maintenance_auto_upgrade.disallowed, {}) : k => v
+        }
+        content {
+          end   = not_allowed.value.end
+          start = not_allowed.value.start
+        }
+      }
+
+      frequency   = maintenance_window_auto_upgrade.value.config.frequency
+      interval    = maintenance_window_auto_upgrade.value.config.interval
+      duration    = maintenance_window_auto_upgrade.value.config.duration
+      day_of_week = try(maintenance_window_auto_upgrade.value.config.day_of_week, null)
+      week_index  = try(maintenance_window_auto_upgrade.value.config.week_index, null)
+      start_time  = try(maintenance_window_auto_upgrade.value.config.start_time, null)
+      utc_offset  = try(maintenance_window_auto_upgrade.value.config.utc_offset, null)
+      start_date  = try(maintenance_window_auto_upgrade.value.config.start_date, null)
+    }
+  }
+
   default_node_pool {
     name       = "default"
     vm_size    = var.aks.default_node_pool.vmsize
@@ -187,8 +240,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     max_count  = try(var.aks.default_node_pool.max_count, null)
     max_pods   = try(var.aks.default_node_pool.max_pods, 30)
     min_count  = try(var.aks.default_node_pool.min_count, null)
-    zones      = try(var.aks.default_node_pool.zones, [])
+    zones      = try(var.aks.default_node_pool.zones, [1, 2, 3])
 
+    custom_ca_trust_enabled      = try(var.aks.default_node_pool.enable.custom_ca_trust, false)
     enable_auto_scaling          = try(var.aks.default_node_pool.auto_scaling, false)
     enable_host_encryption       = try(var.aks.default_node_pool.enable.host_encryption, false)
     enable_node_public_ip        = try(var.aks.default_node_pool.enable.node_public_ip, false)
