@@ -26,7 +26,6 @@ module "analytics" {
     sku           = "PerGB2018"
     retention     = 90
   }
-  depends_on = [module.rg]
 }
 
 module "kv" {
@@ -54,7 +53,6 @@ module "kv" {
       }
     }
   }
-  depends_on = [module.rg]
 }
 
 module "aks" {
@@ -120,5 +118,4 @@ module "aks" {
       }
     }
   }
-  depends_on = [module.rg]
 }

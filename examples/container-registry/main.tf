@@ -25,7 +25,6 @@ module "registry" {
     resourcegroup = module.rg.groups.demo.name
     sku           = "Premium"
   }
-  depends_on = [module.rg]
 }
 
 module "aks" {
@@ -49,5 +48,4 @@ module "aks" {
       node_count = 1
     }
   }
-  depends_on = [module.global]
 }
