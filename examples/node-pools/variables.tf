@@ -1,2 +1,0 @@
-variable "workload" {}
-variable "environment" {}

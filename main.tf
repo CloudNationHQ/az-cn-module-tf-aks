@@ -1,7 +1,7 @@
 # aks cluster
 resource "azurerm_kubernetes_cluster" "aks" {
 
-  name                = "aks-${var.workload}-${var.environment}"
+  name                = var.aks.name
   resource_group_name = var.aks.resourcegroup
   location            = var.aks.location
 
@@ -15,7 +15,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   oidc_issuer_enabled                 = try(var.aks.enable.oidc_issuer, false)
   local_account_disabled              = try(var.aks.disable.local_account, false)
   private_cluster_enabled             = try(var.aks.enable_private_cluster, false)
-  public_network_access_enabled       = try(var.aks.enable.public_access, true)
   open_service_mesh_enabled           = try(var.aks.enable.service_mesh, false)
   run_command_enabled                 = try(var.aks.enable.run_command, false)
   role_based_access_control_enabled   = try(var.aks.enable.rbac, true)
