@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/CloudNationHQ/az-cn-module-tf-aks/compare/v0.3.0...v0.4.0) (2023-09-08)
+
+
+### Features
+
+* add consistent naming ([#21](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/21)) ([7ebb2ed](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/7ebb2eddf344da8c353d2f454bebeb8f61a1e9d3))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#20](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/20)) ([02cbac2](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/02cbac25cba1640e135250079cc890e5423a6529))
+
 ## [0.3.0](https://github.com/CloudNationHQ/az-cn-module-tf-aks/compare/v0.2.0...v0.3.0) (2023-08-08)
 
 
