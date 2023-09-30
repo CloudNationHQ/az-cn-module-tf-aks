@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/CloudNationHQ/az-cn-module-tf-aks/compare/v0.4.0...v0.5.0) (2023-09-30)
+
+
+### Features
+
+* add extended tests ([#24](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/24)) ([2229a5d](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/2229a5da16fe88956206a449535c1028d25f69b6))
+
 ## [0.4.0](https://github.com/CloudNationHQ/az-cn-module-tf-aks/compare/v0.3.0...v0.4.0) (2023-09-08)
 
 
