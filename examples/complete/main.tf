@@ -22,9 +22,6 @@ module "rg" {
 module "analytics" {
   source = "github.com/cloudnationhq/az-cn-module-tf-law"
 
-  workload    = var.workload
-  environment = var.environment
-
   law = {
     location      = module.rg.groups.demo.location
     resourcegroup = module.rg.groups.demo.name

@@ -1,7 +1,7 @@
-output "aks" {
+output "cluster" {
   value = azurerm_kubernetes_cluster.aks
 }
 
-# output "merged_ids" {
-#   value = values(azurerm_kubernetes_cluster.aks)[*].id
-# }
+output "subscriptionId" {
+  value = data.azurerm_subscription.current.subscription_id
+}

@@ -1,3 +1,5 @@
+data "azurerm_subscription" "current" {}
+
 # aks cluster
 resource "azurerm_kubernetes_cluster" "aks" {
 
