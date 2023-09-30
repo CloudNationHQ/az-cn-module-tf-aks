@@ -1,13 +1,9 @@
-.PHONY: test
+.PHONY: test test_extended
 
-export WORKLOAD
-export ENVIRONMENT
-export USECASE
-
-#test_extended:
+export TF_PATH
 
 test:
-	cd tests && go test -v -timeout 60m -run TestApplyNoError/$(USECASE) ./aks_test.go
+	cd tests && go test -v -timeout 60m -run TestApplyNoError/$(TF_PATH) ./aks_test.go
 
-#test_local:
-
+test_extended:
+	cd tests && go test -v -timeout 60m -run TestAks ./aks_extended_test.go -tags extended

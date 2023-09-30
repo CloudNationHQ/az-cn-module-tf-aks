@@ -54,7 +54,6 @@ module "aks" {
     location            = module.rg.groups.demo.location
     resourcegroup       = module.rg.groups.demo.name
     node_resource_group = "${module.rg.groups.demo.name}-node"
-    channel_upgrade     = "stable"
 
     default_node_pool = {
       node_count = 1

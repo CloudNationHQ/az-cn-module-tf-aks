@@ -26,25 +26,21 @@ The below examples shows the usage when consuming the module:
 module "aks" {
   source = "github.com/cloudnationhq/az-cn-module-tf-aks"
 
-  workload       = var.workload
-  environment    = var.environment
-  location_short = module.region.location_short
-
   aks = {
-    location            = module.rg.group.location
-    resourcegroup       = module.rg.group.name
-    node_resource_group = "${module.global.groups.demo.name}-node"
+    name                = module.naming.kubernetes_cluster.name_unique
+    location            = module.rg.groups.demo.location
+    resourcegroup       = module.rg.groups.demo.name
+    node_resource_group = "${module.rg.groups.demo.name}-node"
 
     default_node_pool = {
       vmsize     = "Standard_DS2_v2"
-      zones      = [1, 2, 3]
       node_count = 1
     }
 
     profile = {
       linux = {
         username = "nodeadmin"
-        ssh_key  = module.kv.tls_public_key.aks.value
+        ssh_key  = module.kv.tls_public_keys.aks.value
       }
     }
   }
@@ -57,21 +53,22 @@ module "aks" {
 module "aks" {
   source = "github.com/cloudnationhq/az-cn-module-tf-aks"
 
-  workload       = var.workload
-  environment    = var.environment
-  location_short = module.regions.location_short
-
   aks = {
-    location            = module.rg.group.location
-    resourcegroup       = module.rg.group.name
-    node_resource_group = "${module.rg.group.name}-node"
-    channel_upgrade     = "stable"
-    dns_prefix          = "aksdemo"
+    name                = module.naming.kubernetes_cluster.name_unique
+    location            = module.rg.groups.demo.location
+    resourcegroup       = module.rg.groups.demo.name
+    node_resource_group = "${module.rg.groups.demo.name}-node"
 
     default_node_pool = {
       node_count = 1
-      vmsize           = "Standard_DS2_v2"
-      zones            = [1, 2, 3]
+      vmsize     = "Standard_DS2_v2"
+    }
+
+    profile = {
+      linux = {
+        username = "nodeadmin"
+        ssh_key  = module.kv.tls_public_keys.aks.value
+      }
     }
 
     node_pools = {
@@ -88,17 +85,21 @@ module "aks" {
 module "aks" {
   source = "github.com/cloudnationhq/az-cn-module-tf-aks"
 
-  workload    = var.workload
-  environment = var.environment
-
   aks = {
+    name                = module.naming.kubernetes_cluster.name_unique
     location            = module.rg.groups.demo.location
     resourcegroup       = module.rg.groups.demo.name
     node_resource_group = "${module.rg.groups.demo.name}-node"
-    dns_prefix          = "demo"
 
     registry = {
       attach = true, role_assignment_scope = module.registry.acr.id
+    }
+
+    profile = {
+      linux = {
+        username = "nodeadmin"
+        ssh_key  = module.kv.tls_public_keys.aks.value
+      }
     }
 
     default_node_pool = {
@@ -108,6 +109,12 @@ module "aks" {
   }
 }
 ```
+
+## Data Sources
+
+| Name | Type |
+| :-- | :-- |
+| [azurerm_subscription](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | datasource |
 
 ## Resources
 
@@ -122,29 +129,35 @@ module "aks" {
 
 | Name | Description | Type | Required |
 | :-- | :-- | :-- | :-- |
-| `aks` | describes aks related configuration | object | yes |
-| `workload` | contains the workload name used, for naming convention	| string | yes |
-| `environment` | contains shortname of the environment used for naming convention	| string | yes |
+| `cluster` | describes aks related configuration | object | yes |
+| `naming` | contains naming convention | string | yes |
 
 ## Outputs
 
 | Name | Description |
 | :-- | :-- |
 | `aks` | contains all aks configuration |
+| `subscriptionId` | contains the current subsriptionId |
 
 ## Testing
 
-The github repository utilizes a Makefile to conduct tests to evaluate and validate different configurations of the module. These tests are designed to enhance its stability and reliability.
+As a prerequirement, please ensure that both go and terraform are properly installed on your system.
 
-Before initiating the tests, please ensure that both go and terraform are properly installed on your system.
+The [Makefile](Makefile) includes two distinct variations of tests. The first one is designed to deploy different usage scenarios of the module. These tests are executed by specifying the TF_PATH environment variable, which determines the different usages located in the example directory.
 
-The [Makefile](Makefile) incorporates three distinct test variations. The first one, a local deployment test, is designed for local deployments and allows the overriding of workload and environment values. It includes additional checks and can be initiated using the command ```make test_local```.
+To execute this test, input the command ```make test TF_PATH=simple```, substituting simple with the specific usage you wish to test.
 
-The second variation is an extended test. This test performs additional validations and serves as the default test for the module within the github workflow.
+The second variation is known as a extended test. This one performs additional checks and can be executed without specifying any parameters, using the command ```make test_extended```.
 
-The third variation allows for specific deployment tests. By providing a unique test name in the github workflow, it overrides the default extended test, executing the specific deployment test instead.
+Both are designed to be executed locally and are also integrated into the github workflow.
 
 Each of these tests contributes to the robustness and resilience of the module. They ensure the module performs consistently and accurately under different scenarios and configurations.
+
+## Notes
+
+Using a dedicated module, we've developed a naming convention for resources that's based on specific regular expressions for each type, ensuring correct abbreviations and offering flexibility with multiple prefixes and suffixes
+
+Full examples detailing all usages, along with integrations with dependency modules, are located in the examples directory
 
 ## Authors
 
@@ -158,5 +171,3 @@ MIT Licensed. See [LICENSE](https://github.com/cloudnationhq/az-cn-module-tf-aks
 
 - [Documentation](https://learn.microsoft.com/en-us/azure/aks)
 - [Rest Api](https://learn.microsoft.com/en-us/rest/api/aks)
-
-
