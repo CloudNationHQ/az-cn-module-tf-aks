@@ -33,3 +33,17 @@ locals {
     }
   ])
 }
+
+locals {
+  # Managed RBAC
+  role_based_access_control_enabled   = try(var.aks.rbac.rbac_enabled, true)
+  rbac_aad_managed                    = try(var.aks.rbac.aad_managed, true)
+  rbac_aad_admin_group_object_ids     = try(var.aks.rbac.admin_object_id, [data.azurerm_client_config.current.object_id])
+  rbac_aad_azure_rbac_enabled         = try(var.aks.rbac.use_rbac_for_cluster_roles, true)
+  tenant_id                           = try(var.aks.tenant_id, data.azurerm_subscription.current.tenant_id)
+
+  # Unmanaged RBAC
+  rbac_aad_client_app_id              = try(var.aks.rbac.client_app_id, "")
+  rbac_aad_server_app_id              = try(var.aks.rbac.server_app_id, "")
+  rbac_aad_server_app_secret          = try(var.aks.rbac.server_app_secret, "")
+}

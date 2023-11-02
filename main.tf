@@ -15,16 +15,39 @@ resource "azurerm_kubernetes_cluster" "aks" {
   automatic_channel_upgrade           = try(var.aks.channel_upgrade, null)
   edge_zone                           = try(var.aks.edge_zone, null)
   oidc_issuer_enabled                 = try(var.aks.enable.oidc_issuer, false)
-  local_account_disabled              = try(var.aks.disable.local_account, false)
   private_cluster_enabled             = try(var.aks.enable_private_cluster, false)
   open_service_mesh_enabled           = try(var.aks.enable.service_mesh, false)
   run_command_enabled                 = try(var.aks.enable.run_command, false)
-  role_based_access_control_enabled   = try(var.aks.enable.rbac, true)
   image_cleaner_enabled               = try(var.aks.enable.image_cleaner, false)
   image_cleaner_interval_hours        = try(var.aks.image_cleaner_interval_hours, 48)
   http_application_routing_enabled    = try(var.aks.enable.http_application_routing, false)
   workload_identity_enabled           = try(var.aks.enable.workload_identity, false)
   custom_ca_trust_certificates_base64 = try(var.aks.custom_ca_trust_certificates_base64, [])
+
+  local_account_disabled              = try(var.aks.rbac.local_account, true)
+
+  dynamic "azure_active_directory_role_based_access_control" {
+    for_each = local.role_based_access_control_enabled && local.rbac_aad_managed ? ["rbac"] : []
+
+    content {
+      admin_group_object_ids = local.rbac_aad_admin_group_object_ids
+      azure_rbac_enabled     = local.rbac_aad_azure_rbac_enabled
+      managed                = true
+      tenant_id              = local.tenant_id
+    }
+  }
+
+  dynamic "azure_active_directory_role_based_access_control" {
+    for_each = local.role_based_access_control_enabled && !local.rbac_aad_managed ? ["rbac"] : []
+
+    content {
+      client_app_id     = local.rbac_aad_client_app_id
+      managed           = false
+      server_app_id     = local.rbac_aad_server_app_id
+      server_app_secret = local.rbac_aad_server_app_secret
+      tenant_id         = local.tenant_id
+    }
+  }
 
   dynamic "network_profile" {
     for_each = try(var.aks.profile.network, null) != null ? { "default" = var.aks.profile.network } : {}
