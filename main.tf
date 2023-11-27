@@ -12,7 +12,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   sku_tier                            = try(var.aks.sku, "Free")
   node_resource_group                 = try(var.aks.node_resource_group, [])
   azure_policy_enabled                = try(var.aks.enable.azure_policy, false)
-  dns_prefix                          = try(var.aks.dns_prefix, false)
+  dns_prefix                          = try(var.aks.dns_prefix, null)
+  dns_prefix_private_cluster          = try(var.aks.dns_prefix, null)
   automatic_channel_upgrade           = try(var.aks.channel_upgrade, null)
   edge_zone                           = try(var.aks.edge_zone, null)
   oidc_issuer_enabled                 = try(var.aks.enable.oidc_issuer, false)
@@ -27,6 +28,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   local_account_disabled              = try(var.aks.rbac.local_account, true)
 
+  # This defaults to Azure RBAC. The current user is set to admin by default
   dynamic "azure_active_directory_role_based_access_control" {
     for_each = local.role_based_access_control_enabled && local.rbac_aad_managed ? ["rbac"] : []
 
