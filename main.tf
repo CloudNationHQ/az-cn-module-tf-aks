@@ -259,13 +259,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   default_node_pool {
-    name       = "default"
-    vm_size    = var.aks.default_node_pool.vmsize
-    node_count = var.aks.default_node_pool.node_count
-    max_count  = try(var.aks.default_node_pool.max_count, null)
-    max_pods   = try(var.aks.default_node_pool.max_pods, 30)
-    min_count  = try(var.aks.default_node_pool.min_count, null)
-    zones      = try(var.aks.default_node_pool.zones, [1, 2, 3])
+    name           = try(var.aks.default_node_pool.name, "default")
+    vm_size        = var.aks.default_node_pool.vmsize
+    node_count     = var.aks.default_node_pool.node_count
+    max_count      = try(var.aks.default_node_pool.max_count, null)
+    max_pods       = try(var.aks.default_node_pool.max_pods, 30)
+    min_count      = try(var.aks.default_node_pool.min_count, null)
+    zones          = try(var.aks.default_node_pool.zones, [1, 2, 3])
+    vnet_subnet_id = try(var.aks.default_node_pool.vnet_subnet_id, false)
 
     custom_ca_trust_enabled      = try(var.aks.default_node_pool.enable.custom_ca_trust, false)
     enable_auto_scaling          = try(var.aks.default_node_pool.auto_scaling, false)
