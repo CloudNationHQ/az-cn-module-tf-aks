@@ -16,7 +16,7 @@ locals {
       priority               = try(pools.priority, null)
       os_type                = try(pools.os_type, null)
       os_sku                 = try(pools.os_sku, null)
-      node_tains             = try(pools.node_tains, null)
+      node_taints            = try(pools.node_taints, null)
       node_labels            = try(pools.node_labels, null)
       mode                   = try(pools.mode, "User")
       max_pods               = try(pools.max_pods, 30)
@@ -27,10 +27,13 @@ locals {
       enable_node_public_ip  = try(pools.enable.node_public_ip, false)
       enable_auto_scaling    = try(pools.enable.auto_scaling, false)
       enable_host_encryption = try(pools.enable.host_encryption, false)
-      node_taints            = try(pools.node_taints, null)
-      node_labels            = try(pools.node_labels, null)
       availability_zones     = try(pools.availability_zones, [])
       vnet_subnet_id         = try(pools.vnet_subnet_id, null)
+
+      custom_ca_trust        = try(pools.custom_ca_trust, false)
+      tags                   = try(pools.tags, {})
+      zones                  = try(pools.zones, [])
+
     }
   ])
 }

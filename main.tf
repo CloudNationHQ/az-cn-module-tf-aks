@@ -269,6 +269,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     min_count      = try(var.aks.default_node_pool.min_count, null)
     zones          = try(var.aks.default_node_pool.zones, [1, 2, 3])
     vnet_subnet_id = try(var.aks.default_node_pool.vnet_subnet_id, false)
+    node_labels    = try(var.aks.default_node_pool.node_labels, false)
+    node_taints    = try(var.aks.default_node_pool.node_taints, [])
+    tags           = try(var.aks.default_node_pool.tags, {})
 
     custom_ca_trust_enabled      = try(var.aks.default_node_pool.enable.custom_ca_trust, false)
     enable_auto_scaling          = try(var.aks.default_node_pool.auto_scaling, false)
@@ -365,30 +368,31 @@ resource "azurerm_kubernetes_cluster_node_pool" "pools" {
     for pools in local.aks_pools : pools.pools_key => pools
   }
 
-  name                  = each.value.poolname
-  kubernetes_cluster_id = each.value.aks_cluster_id
-  vm_size               = each.value.vmsize
-  max_count             = each.value.max_count
-  min_count             = each.value.min_count
-  node_count            = each.value.node_count
+  name                    = each.value.poolname
+  kubernetes_cluster_id   = each.value.aks_cluster_id
+  vm_size                 = each.value.vmsize
+  max_count               = each.value.max_count
+  min_count               = each.value.min_count
+  node_count              = each.value.node_count
+  custom_ca_trust_enabled = each.value.enable.custom_ca_trust
 
-  zones                  = each.value.availability_zones
-  enable_auto_scaling    = each.value.enable_auto_scaling
-  enable_host_encryption = each.value.enable_host_encryption
-  enable_node_public_ip  = each.value.enable_node_public_ip
-  fips_enabled           = each.value.enable_fips
-  eviction_policy        = each.value.eviction_policy
-  kubelet_disk_type      = each.value.kubelet_disk_type
-  max_pods               = each.value.max_pods
-  mode                   = each.value.mode
-  node_labels            = each.value.node_labels
-  node_taints            = each.value.node_taints
-  os_sku                 = each.value.os_sku
-  os_type                = each.value.os_type
-  priority               = each.value.priority
-  snapshot_id            = each.value.snapshot_id
-  workload_runtime       = each.value.workload_runtime
-  vnet_subnet_id         = each.value.vnet_subnet_id
+  zones                   = each.value.availability_zones
+  enable_auto_scaling     = each.value.enable_auto_scaling
+  enable_host_encryption  = each.value.enable_host_encryption
+  enable_node_public_ip   = each.value.enable_node_public_ip
+  fips_enabled            = each.value.enable_fips
+  eviction_policy         = each.value.eviction_policy
+  kubelet_disk_type       = each.value.kubelet_disk_type
+  max_pods                = each.value.max_pods
+  mode                    = each.value.mode
+  node_labels             = each.value.node_labels
+  node_taints             = each.value.node_taints
+  os_sku                  = each.value.os_sku
+  os_type                 = each.value.os_type
+  priority                = each.value.priority
+  snapshot_id             = each.value.snapshot_id
+  workload_runtime        = each.value.workload_runtime
+  vnet_subnet_id          = each.value.vnet_subnet_id
 
   dynamic "upgrade_settings" {
     for_each = {
