@@ -9,15 +9,28 @@ locals {
       max_surge              = pools.max_surge
       poolname               = "aks${pools_key}"
       aks_cluster_id         = azurerm_kubernetes_cluster.aks.id
-      linux_os_config        = try(pools.config.linux_os, {})
-      kubelet_config         = try(pools.config.kubelet, {})
+      linux_os_config        = try(pools.config.linux_os, {
+              swap_file_size_mb = 1500
+              transparent_huge_page_defrag = "defer+madvise"
+              transparent_huge_page_enabled = "madvise"
+      })
+
+      kubelet_config         = try(pools.config.kubelet, {
+          allowed_unsafe_sysctls    = []
+          container_log_max_line    = 1000
+          container_log_max_size_mb = 10
+          image_gc_high_threshold   = 90
+          image_gc_low_threshold    = 70
+          pod_max_pid               = 0
+          topology_manager_policy   = "best-effort"
+      })
       workload_runtime       = try(pools.workload_runtime, null)
       snapshot_id            = try(pools.snapshot_id, null)
       priority               = try(pools.priority, null)
       os_type                = try(pools.os_type, null)
       os_sku                 = try(pools.os_sku, null)
-      node_taints            = try(pools.node_taints, null)
-      node_labels            = try(pools.node_labels, null)
+      node_labels            = try(pools.node_labels, {})
+      node_taints            = try(pools.node_taints, [])
       mode                   = try(pools.mode, "User")
       max_pods               = try(pools.max_pods, 30)
       kubelet_disk_type      = try(pools.kubelet_disk_type, null)
@@ -33,7 +46,6 @@ locals {
       custom_ca_trust        = try(pools.custom_ca_trust, false)
       tags                   = try(pools.tags, {})
       zones                  = try(pools.zones, [])
-
     }
   ])
 }
