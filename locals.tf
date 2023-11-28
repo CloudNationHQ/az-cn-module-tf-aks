@@ -30,6 +30,7 @@ locals {
       node_taints            = try(pools.node_taints, null)
       node_labels            = try(pools.node_labels, null)
       availability_zones     = try(pools.availability_zones, [])
+      vnet_subnet_id         = try(pools.vnet_subnet_id, null)
     }
   ])
 }
