@@ -269,7 +269,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     min_count      = try(var.aks.default_node_pool.min_count, null)
     zones          = try(var.aks.default_node_pool.zones, [1, 2, 3])
     vnet_subnet_id = try(var.aks.default_node_pool.vnet_subnet_id, false)
-    node_labels    = try(var.aks.default_node_pool.node_labels, false)
+    node_labels    = try(var.aks.default_node_pool.node_labels, {})
     node_taints    = try(var.aks.default_node_pool.node_taints, [])
     tags           = try(var.aks.default_node_pool.tags, {})
 
@@ -279,7 +279,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
     enable_node_public_ip        = try(var.aks.default_node_pool.enable.node_public_ip, false)
     fips_enabled                 = try(var.aks.default_node_pool.enable.fips, null)
     only_critical_addons_enabled = try(var.aks.default_node_pool.enable.only_critical_addons, false)
-    node_labels                  = try(var.aks.default_node_pool.node_labels, null)
     os_sku                       = try(var.aks.default_node_pool.os_sku, null)
     type                         = try(var.aks.default_node_pool.type, "VirtualMachineScaleSets")
     workload_runtime             = try(var.aks.default_node_pool.workload_runtime, null)
