@@ -388,6 +388,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "pools" {
   priority               = each.value.priority
   snapshot_id            = each.value.snapshot_id
   workload_runtime       = each.value.workload_runtime
+  vnet_subnet_id         = each.value.vnet_subnet_id
 
   dynamic "upgrade_settings" {
     for_each = {
