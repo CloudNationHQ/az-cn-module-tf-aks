@@ -10,19 +10,22 @@ locals {
       poolname               = "aks${pools_key}"
       aks_cluster_id         = azurerm_kubernetes_cluster.aks.id
       linux_os_config        = try(pools.config.linux_os, {
-              swap_file_size_mb = 1500
-              transparent_huge_page_defrag = "defer+madvise"
-              transparent_huge_page_enabled = "madvise"
+              swap_file_size_mb             = "none"
+              transparent_huge_page_defrag  = "madvise"
+              transparent_huge_page_enabled = "always"
       })
 
       kubelet_config         = try(pools.config.kubelet, {
           allowed_unsafe_sysctls    = []
-          container_log_max_line    = 1000
-          container_log_max_size_mb = 10
-          image_gc_high_threshold   = 90
-          image_gc_low_threshold    = 70
-          pod_max_pid               = 0
-          topology_manager_policy   = "best-effort"
+          container_log_max_line    = 5
+          container_log_max_size_mb = 50
+          cpu_cfs_quota_enabled     = true
+          cpu_cfs_quota_period      = 100
+          cpu_manager_policy        = "none"
+          image_gc_high_threshold   = 85
+          image_gc_low_threshold    = 80
+          pod_max_pid               = -1
+          topology_manager_policy   = "none"
       })
       workload_runtime       = try(pools.workload_runtime, null)
       snapshot_id            = try(pools.snapshot_id, null)
