@@ -373,7 +373,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "pools" {
   max_count               = each.value.max_count
   min_count               = each.value.min_count
   node_count              = each.value.node_count
-  custom_ca_trust_enabled = each.value.enable.custom_ca_trust
+  custom_ca_trust_enabled = each.value.custom_ca_trust
 
   zones                   = each.value.availability_zones
   enable_auto_scaling     = each.value.enable_auto_scaling
