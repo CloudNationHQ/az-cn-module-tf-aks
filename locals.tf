@@ -20,7 +20,7 @@ locals {
           container_log_max_line    = 5
           container_log_max_size_mb = 50
           cpu_cfs_quota_enabled     = true
-          cpu_cfs_quota_period      = 100
+          cpu_cfs_quota_period      = "100ms"
           cpu_manager_policy        = "none"
           image_gc_high_threshold   = 85
           image_gc_low_threshold    = 80
