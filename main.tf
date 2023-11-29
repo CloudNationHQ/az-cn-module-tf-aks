@@ -26,7 +26,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   workload_identity_enabled           = try(var.aks.enable.workload_identity, false)
   custom_ca_trust_certificates_base64 = try(var.aks.custom_ca_trust_certificates_base64, [])
 
-  local_account_disabled              = try(var.aks.rbac.local_account, true)
+  local_account_disabled = try(var.aks.rbac.local_account, true)
 
   # This defaults to Azure RBAC. The current user is set to admin by default
   dynamic "azure_active_directory_role_based_access_control" {
@@ -375,23 +375,23 @@ resource "azurerm_kubernetes_cluster_node_pool" "pools" {
   node_count              = each.value.node_count
   custom_ca_trust_enabled = each.value.custom_ca_trust
 
-  zones                   = each.value.availability_zones
-  enable_auto_scaling     = each.value.enable_auto_scaling
-  enable_host_encryption  = each.value.enable_host_encryption
-  enable_node_public_ip   = each.value.enable_node_public_ip
-  fips_enabled            = each.value.enable_fips
-  eviction_policy         = each.value.eviction_policy
-  kubelet_disk_type       = each.value.kubelet_disk_type
-  max_pods                = each.value.max_pods
-  mode                    = each.value.mode
-  node_labels             = each.value.node_labels
-  node_taints             = each.value.node_taints
-  os_sku                  = each.value.os_sku
-  os_type                 = each.value.os_type
-  priority                = each.value.priority
-  snapshot_id             = each.value.snapshot_id
-  workload_runtime        = each.value.workload_runtime
-  vnet_subnet_id          = each.value.vnet_subnet_id
+  zones                  = each.value.availability_zones
+  enable_auto_scaling    = each.value.enable_auto_scaling
+  enable_host_encryption = each.value.enable_host_encryption
+  enable_node_public_ip  = each.value.enable_node_public_ip
+  fips_enabled           = each.value.enable_fips
+  eviction_policy        = each.value.eviction_policy
+  kubelet_disk_type      = each.value.kubelet_disk_type
+  max_pods               = each.value.max_pods
+  mode                   = each.value.mode
+  node_labels            = each.value.node_labels
+  node_taints            = each.value.node_taints
+  os_sku                 = each.value.os_sku
+  os_type                = each.value.os_type
+  priority               = each.value.priority
+  snapshot_id            = each.value.snapshot_id
+  workload_runtime       = each.value.workload_runtime
+  vnet_subnet_id         = each.value.vnet_subnet_id
 
   dynamic "upgrade_settings" {
     for_each = {
