@@ -1,4 +1,5 @@
 data "azurerm_subscription" "current" {}
+data "azurerm_client_config" "current" {}
 
 # aks cluster
 resource "azurerm_kubernetes_cluster" "aks" {
@@ -11,20 +12,45 @@ resource "azurerm_kubernetes_cluster" "aks" {
   sku_tier                            = try(var.aks.sku, "Free")
   node_resource_group                 = try(var.aks.node_resource_group, [])
   azure_policy_enabled                = try(var.aks.enable.azure_policy, false)
-  dns_prefix                          = try(var.aks.dns_prefix, false)
+  dns_prefix                          = try(var.aks.dns_prefix, null)
+  dns_prefix_private_cluster          = try(var.aks.dns_prefix_private_cluster, null)
   automatic_channel_upgrade           = try(var.aks.channel_upgrade, null)
   edge_zone                           = try(var.aks.edge_zone, null)
   oidc_issuer_enabled                 = try(var.aks.enable.oidc_issuer, false)
-  local_account_disabled              = try(var.aks.disable.local_account, false)
   private_cluster_enabled             = try(var.aks.enable_private_cluster, false)
   open_service_mesh_enabled           = try(var.aks.enable.service_mesh, false)
   run_command_enabled                 = try(var.aks.enable.run_command, false)
-  role_based_access_control_enabled   = try(var.aks.enable.rbac, true)
   image_cleaner_enabled               = try(var.aks.enable.image_cleaner, false)
   image_cleaner_interval_hours        = try(var.aks.image_cleaner_interval_hours, 48)
   http_application_routing_enabled    = try(var.aks.enable.http_application_routing, false)
   workload_identity_enabled           = try(var.aks.enable.workload_identity, false)
   custom_ca_trust_certificates_base64 = try(var.aks.custom_ca_trust_certificates_base64, [])
+
+  local_account_disabled = try(var.aks.rbac.local_account, true)
+
+  # This defaults to Azure RBAC. The current user is set to admin by default
+  dynamic "azure_active_directory_role_based_access_control" {
+    for_each = local.role_based_access_control_enabled && local.rbac_aad_managed ? ["rbac"] : []
+
+    content {
+      admin_group_object_ids = local.rbac_aad_admin_group_object_ids
+      azure_rbac_enabled     = local.rbac_aad_azure_rbac_enabled
+      managed                = true
+      tenant_id              = local.tenant_id
+    }
+  }
+
+  dynamic "azure_active_directory_role_based_access_control" {
+    for_each = local.role_based_access_control_enabled && !local.rbac_aad_managed ? ["rbac"] : []
+
+    content {
+      client_app_id     = local.rbac_aad_client_app_id
+      managed           = false
+      server_app_id     = local.rbac_aad_server_app_id
+      server_app_secret = local.rbac_aad_server_app_secret
+      tenant_id         = local.tenant_id
+    }
+  }
 
   dynamic "network_profile" {
     for_each = try(var.aks.profile.network, null) != null ? { "default" = var.aks.profile.network } : {}
@@ -235,13 +261,17 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   default_node_pool {
-    name       = "default"
-    vm_size    = var.aks.default_node_pool.vmsize
-    node_count = var.aks.default_node_pool.node_count
-    max_count  = try(var.aks.default_node_pool.max_count, null)
-    max_pods   = try(var.aks.default_node_pool.max_pods, 30)
-    min_count  = try(var.aks.default_node_pool.min_count, null)
-    zones      = try(var.aks.default_node_pool.zones, [1, 2, 3])
+    name           = try(var.aks.default_node_pool.name, "default")
+    vm_size        = var.aks.default_node_pool.vmsize
+    node_count     = var.aks.default_node_pool.node_count
+    max_count      = try(var.aks.default_node_pool.max_count, null)
+    max_pods       = try(var.aks.default_node_pool.max_pods, 30)
+    min_count      = try(var.aks.default_node_pool.min_count, null)
+    zones          = try(var.aks.default_node_pool.zones, [1, 2, 3])
+    vnet_subnet_id = try(var.aks.default_node_pool.vnet_subnet_id, false)
+    node_labels    = try(var.aks.default_node_pool.node_labels, {})
+    node_taints    = try(var.aks.default_node_pool.node_taints, [])
+    tags           = try(var.aks.default_node_pool.tags, {})
 
     custom_ca_trust_enabled      = try(var.aks.default_node_pool.enable.custom_ca_trust, false)
     enable_auto_scaling          = try(var.aks.default_node_pool.auto_scaling, false)
@@ -249,7 +279,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
     enable_node_public_ip        = try(var.aks.default_node_pool.enable.node_public_ip, false)
     fips_enabled                 = try(var.aks.default_node_pool.enable.fips, null)
     only_critical_addons_enabled = try(var.aks.default_node_pool.enable.only_critical_addons, false)
-    node_labels                  = try(var.aks.default_node_pool.node_labels, null)
     os_sku                       = try(var.aks.default_node_pool.os_sku, null)
     type                         = try(var.aks.default_node_pool.type, "VirtualMachineScaleSets")
     workload_runtime             = try(var.aks.default_node_pool.workload_runtime, null)
@@ -338,12 +367,13 @@ resource "azurerm_kubernetes_cluster_node_pool" "pools" {
     for pools in local.aks_pools : pools.pools_key => pools
   }
 
-  name                  = each.value.poolname
-  kubernetes_cluster_id = each.value.aks_cluster_id
-  vm_size               = each.value.vmsize
-  max_count             = each.value.max_count
-  min_count             = each.value.min_count
-  node_count            = each.value.node_count
+  name                    = each.value.poolname
+  kubernetes_cluster_id   = each.value.aks_cluster_id
+  vm_size                 = each.value.vmsize
+  max_count               = each.value.max_count
+  min_count               = each.value.min_count
+  node_count              = each.value.node_count
+  custom_ca_trust_enabled = each.value.custom_ca_trust
 
   zones                  = each.value.availability_zones
   enable_auto_scaling    = each.value.enable_auto_scaling
@@ -361,6 +391,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "pools" {
   priority               = each.value.priority
   snapshot_id            = each.value.snapshot_id
   workload_runtime       = each.value.workload_runtime
+  vnet_subnet_id         = each.value.vnet_subnet_id
 
   dynamic "upgrade_settings" {
     for_each = {
