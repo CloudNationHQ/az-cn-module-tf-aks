@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/CloudNationHQ/az-cn-module-tf-aks/compare/v0.5.0...v0.6.0) (2023-11-30)
+
+
+### Features
+
+* Azure RBAC, private subnets,  and other minor updates ([#36](https://github.com/CloudNationHQ/az-cn-module-tf-aks/issues/36)) ([3d483df](https://github.com/CloudNationHQ/az-cn-module-tf-aks/commit/3d483dfb8f6701adbbf45089c59dcbd4261b9614))
+
 ## [0.5.0](https://github.com/CloudNationHQ/az-cn-module-tf-aks/compare/v0.4.0...v0.5.0) (2023-09-30)
 
 
